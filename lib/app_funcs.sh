@@ -23,7 +23,12 @@ function copy_hex() {
   # https://github.com/HashNuke/heroku-buildpack-elixir/issues/194
   if [ $(build_hex_home_path) != $(runtime_hex_home_path) ]; then
     output_section "Copying hex from $(build_hex_home_path)"
-    cp -R $(build_hex_home_path)/* "$(runtime_hex_home_path)/"
+    # newer Hex (2.5+) can leave the hex home empty or not create it at all;
+    # "dir/." copies nothing in that case, where an unmatched "dir/*" glob
+    # made cp fail the build
+    if [ -d "$(build_hex_home_path)" ]; then
+      cp -R "$(build_hex_home_path)/." "$(runtime_hex_home_path)/"
+    fi
   fi
 }
 
