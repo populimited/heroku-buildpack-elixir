@@ -26,7 +26,6 @@ function copy_hex() {
     # newer Hex (2.5+) can leave the hex home empty or not create it at all;
     # "dir/." copies nothing in that case, where an unmatched "dir/*" glob
     # made cp fail the build
-    mkdir -p "$(runtime_hex_home_path)"
     if [ -d "$(build_hex_home_path)" ]; then
       cp -R "$(build_hex_home_path)/." "$(runtime_hex_home_path)/"
     fi

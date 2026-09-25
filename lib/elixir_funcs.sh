@@ -67,7 +67,7 @@ function restore_mix() {
 
   if [ -d $(hex_backup_path) ]; then
     mkdir -p $(build_hex_home_path)
-    cp -pR $(hex_backup_path)/* $(build_hex_home_path)
+    cp -pR $(hex_backup_path)/. $(build_hex_home_path)
   fi
 }
 
@@ -78,12 +78,16 @@ function backup_mix() {
   mkdir -p $(mix_backup_path) $(hex_backup_path)
 
   cp -pR $(build_mix_home_path)/* $(mix_backup_path)
-  cp -pR $(build_hex_home_path)/* $(hex_backup_path)
 
-  # https://github.com/HashNuke/heroku-buildpack-elixir/issues/194
-  if [ $(build_hex_home_path) != $(runtime_hex_home_path) ]; then
-    mkdir -p $(runtime_hex_home_path)
-    cp -pR $(build_hex_home_path)/* $(runtime_hex_home_path)
+  # the hex home can be empty or missing with Hex 2.5+ (see copy_hex)
+  if [ -d $(build_hex_home_path) ]; then
+    cp -pR $(build_hex_home_path)/. $(hex_backup_path)
+
+    # https://github.com/HashNuke/heroku-buildpack-elixir/issues/194
+    if [ $(build_hex_home_path) != $(runtime_hex_home_path) ]; then
+      mkdir -p $(runtime_hex_home_path)
+      cp -pR $(build_hex_home_path)/. $(runtime_hex_home_path)
+    fi
   fi
 
   # https://github.com/HashNuke/heroku-buildpack-elixir/issues/194
